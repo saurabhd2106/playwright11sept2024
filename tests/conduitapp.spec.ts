@@ -1,8 +1,11 @@
 import {expect, test} from "@playwright/test"
+import { Loginpage } from "../pages/loginpage"
 
 test.describe("Conduit App Tests", () => {
 
     test("Login to the application", async ({ page }) => {
+
+        const logpage = new Loginpage(page);
 
         const useremail = "testuser@test.com"
         const password = "testpassword"

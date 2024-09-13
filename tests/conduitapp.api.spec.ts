@@ -1,4 +1,7 @@
 import { expect, test } from "@playwright/test"
+import { RestClient } from "../support/restclient";
+import userdata from "../testdata/users.json"
+import  articleData  from "../testdata/article.json"
 
 test.describe("API testing", async () => {
 
@@ -8,18 +11,13 @@ test.describe("API testing", async () => {
 
         //1. Prepare the test data
 
-        const testdata = {
-            "user": {
-                "email": "testuser@test.com",
-                "password": "testpassword"
-            }
-        }
+        // Reading from testdata folder
 
         //2. Send Login API
 
         const response = await request.post("/api/users/login", {
 
-            data: testdata
+            data: userdata
 
         })
 
@@ -36,11 +34,9 @@ test.describe("API testing", async () => {
 
     test("Get Tags", async ({ request }) => {
 
-        const response = await request.get("/api/tags", {
-            headers: {
-                "Content-Type": "application/json"
-            }
-        });
+        const restclient = new RestClient(request);
+
+        const response = await restclient.SendGetRequest("/api/tags");
 
         expect(response.ok()).toBeTruthy();
 
@@ -52,33 +48,21 @@ test.describe("API testing", async () => {
 
     test("Post Article", async ({ request }) => {
 
-        const articleData = {
-            "article": {
-                "body": "Article description",
-                "description": "Article 1234",
-                "tagList": [
-                    "playwright"
-                ],
-                "title": "Test Articles"
-            }
+        const restclient = new RestClient(request);
+
+        const headers = {
+            "Content-Type": "application/json",
+            "Authorization": "Token " + token
         }
 
-       const response = await request.post("/api/articles", {
-
-            data: articleData, 
-
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Token " + token
-            }
-
-
-        }) 
+       const response = await restclient.SendPostRequest("/api/article", {data: articleData, headers: headers})
 
 
         const res = await response.json();
 
-        expect(response.ok()).toBeTruthy()
+        expect(response.ok()).toBeTruthy();
+
+        expect(res.article.title).toBe(articleData.article.title)
 
     })
 

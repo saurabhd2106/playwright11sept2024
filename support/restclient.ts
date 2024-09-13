@@ -29,10 +29,6 @@ export class RestClient {
 
         }
 
-
-
-
-
     }
 
     async SendPostRequest(url, payload, headers = {}) {
